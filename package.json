@@ -1,0 +1,26 @@
+{
+  "name": "campusconnect-monorepo",
+  "version": "1.0.0",
+  "description": "CampusConnect - College Event and Club Management System (MERN Capstone)",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "install:all": "npm run install:server && npm run install:client",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "test:server": "cd server && npm test",
+    "build:client": "cd client && npm run build",
+    "seed": "cd server && npm run seed"
+  },
+  "keywords": [
+    "mern",
+    "ictak",
+    "capstone",
+    "college-events",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "CampusConnect Team",
+  "license": "ISC"
+}
