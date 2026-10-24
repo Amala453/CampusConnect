@@ -2,7 +2,7 @@ const resolveApiBaseUrl = () => {
   let url = import.meta.env.VITE_API_URL;
   if (!url || typeof url !== 'string' || url.trim() === '') {
     url = import.meta.env.PROD
-      ? 'https://campusconnect-2j68.onrender.com/api'
+      ? 'https://campusconnect-2j58.onrender.com/api'
       : 'http://localhost:5000/api';
   }
   url = url.trim().replace(/\/+$/, '');

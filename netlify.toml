@@ -4,7 +4,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://campusconnect-2j68.onrender.com/api"
+  VITE_API_URL = "https://campusconnect-2j58.onrender.com/api"
 
 [[redirects]]
   from = "/*"
