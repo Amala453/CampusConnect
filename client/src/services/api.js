@@ -1,4 +1,18 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const resolveApiBaseUrl = () => {
+  let url = import.meta.env.VITE_API_URL;
+  if (!url || typeof url !== 'string' || url.trim() === '') {
+    url = import.meta.env.PROD
+      ? 'https://campusconnect-2j68.onrender.com/api'
+      : 'http://localhost:5000/api';
+  }
+  url = url.trim().replace(/\/+$/, '');
+  if (!url.endsWith('/api')) {
+    url = `${url}/api`;
+  }
+  return url;
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 /**
  * Universal HTTP request wrapper handling Authorization tokens and JSON parsing

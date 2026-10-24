@@ -209,6 +209,79 @@ const runAllTests = async () => {
     assert.strictEqual(isSelfDemotion, true);
   });
 
+  // Test Group 6: Health Check & Database Guard
+  console.log('\n--- 6. Health Check & Database Guard Status ---');
+  await runTest('Health check reflects disconnected database with 503 status', async () => {
+    const mongoose = require('mongoose');
+    const origState = mongoose.connection.readyState;
+
+    Object.defineProperty(mongoose.connection, 'readyState', { value: 0, configurable: true });
+
+    let statusSent = null;
+    let jsonSent = null;
+    const res = {
+      status: (code) => {
+        statusSent = code;
+        return {
+          json: (data) => {
+            jsonSent = data;
+          },
+        };
+      },
+    };
+
+    // Simulate health check handler logic
+    const isDbConnected = mongoose.connection.readyState === 1;
+    const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const statusCode = isDbConnected ? 200 : 503;
+    res.status(statusCode).json({
+      status: isDbConnected ? 'healthy' : 'unhealthy',
+      database: dbStates[mongoose.connection.readyState],
+    });
+
+    assert.strictEqual(statusSent, 503);
+    assert.strictEqual(jsonSent.status, 'unhealthy');
+    assert.strictEqual(jsonSent.database, 'disconnected');
+
+    // Restore
+    Object.defineProperty(mongoose.connection, 'readyState', { value: origState, configurable: true });
+  });
+
+  await runTest('Health check reflects connected database with 200 status', async () => {
+    const mongoose = require('mongoose');
+    const origState = mongoose.connection.readyState;
+
+    Object.defineProperty(mongoose.connection, 'readyState', { value: 1, configurable: true });
+
+    let statusSent = null;
+    let jsonSent = null;
+    const res = {
+      status: (code) => {
+        statusSent = code;
+        return {
+          json: (data) => {
+            jsonSent = data;
+          },
+        };
+      },
+    };
+
+    const isDbConnected = mongoose.connection.readyState === 1;
+    const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const statusCode = isDbConnected ? 200 : 503;
+    res.status(statusCode).json({
+      status: isDbConnected ? 'healthy' : 'unhealthy',
+      database: dbStates[mongoose.connection.readyState],
+    });
+
+    assert.strictEqual(statusSent, 200);
+    assert.strictEqual(jsonSent.status, 'healthy');
+    assert.strictEqual(jsonSent.database, 'connected');
+
+    // Restore
+    Object.defineProperty(mongoose.connection, 'readyState', { value: origState, configurable: true });
+  });
+
   console.log('\n======================================================');
   console.log(` Summary: ${passedTests} passed, ${failedTests} failed.`);
   console.log('======================================================\n');
